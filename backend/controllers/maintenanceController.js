@@ -5,7 +5,7 @@ exports.createTicket = async (req, res) => {
     const { issueType, description, urgency } = req.body;
     
     const ticketId = await Maintenance.create({
-      userId: req.user.userId,
+      userId: req.user.id,  // ✅ fixed here
       issueType,
       description,
       urgency
@@ -26,7 +26,7 @@ exports.createTicket = async (req, res) => {
 
 exports.getUserTickets = async (req, res) => {
   try {
-    const tickets = await Maintenance.findByUser(req.user.userId);
+    const tickets = await Maintenance.findByUser(req.user.id);  // ✅ fixed here
     res.json(tickets);
   } catch (err) {
     console.error(err.message);

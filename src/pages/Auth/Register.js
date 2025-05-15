@@ -79,6 +79,7 @@ const Register = () => {
               >
                 <option value="student">Student</option>
                 <option value="lecturer">Lecturer</option>
+                <option value="admin">Admin</option>
               </Form.Select>
             </Form.Group>
             <Form.Group className="mb-3">

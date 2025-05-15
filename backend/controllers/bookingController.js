@@ -1,10 +1,11 @@
 const Booking = require('../models/Booking');
+const pool = require('../config/db');
 
 exports.createBooking = async (req, res) => {
   try {
     const { room, purpose, startTime, endTime } = req.body;
-    
-    // Check for booking conflicts
+
+    // Conflict check
     const [conflicts] = await pool.query(
       `SELECT id FROM bookings 
        WHERE room = ? AND (
@@ -14,20 +15,23 @@ exports.createBooking = async (req, res) => {
        )`,
       [room, endTime, startTime, startTime, endTime, startTime, endTime]
     );
-    
+
     if (conflicts.length > 0) {
       return res.status(400).json({ msg: 'Room already booked for this time' });
     }
 
-    const bookingId = await Booking.create({
-      userId: req.user.userId,
+    // Correct user ID and get insert result
+    const result = await Booking.create({
+      userId: req.user.id,
       room,
       purpose,
       startTime,
       endTime
     });
-    
-    res.json({ 
+
+    const bookingId = result.insertId || result.id; // adapt based on your model
+
+    res.status(201).json({
       id: bookingId,
       room,
       purpose,
@@ -36,14 +40,14 @@ exports.createBooking = async (req, res) => {
       status: 'pending'
     });
   } catch (err) {
-    console.error(err.message);
+    console.error('CreateBooking error:', err.message);
     res.status(500).send('Server error');
   }
 };
 
 exports.getUserBookings = async (req, res) => {
   try {
-    const bookings = await Booking.findByUser(req.user.userId);
+    const bookings = await Booking.findByUser(req.user.id);
     res.json(bookings);
   } catch (err) {
     console.error(err.message);

@@ -14,10 +14,19 @@ class Booking {
       `SELECT b.*, u.name as user_name 
        FROM bookings b
        JOIN users u ON b.user_id = u.id
-       WHERE user_id = ?`, 
+       WHERE b.user_id = ?`, 
       [userId]
     );
-    return rows;
+
+    return rows.map(row => ({
+      id: row.id,
+      room: row.room,
+      purpose: row.purpose,
+      startTime: row.start_time,
+      endTime: row.end_time,
+      status: row.status,
+      user_name: row.user_name,
+    }));
   }
 
   static async getAll() {
@@ -26,7 +35,16 @@ class Booking {
        FROM bookings b
        JOIN users u ON b.user_id = u.id`
     );
-    return rows;
+
+    return rows.map(row => ({
+      id: row.id,
+      room: row.room,
+      purpose: row.purpose,
+      startTime: row.start_time,
+      endTime: row.end_time,
+      status: row.status,
+      user_name: row.user_name,
+    }));
   }
 }
 

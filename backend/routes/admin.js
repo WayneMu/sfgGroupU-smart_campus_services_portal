@@ -4,12 +4,11 @@ const adminController = require('../controllers/adminController');
 
 const router = express.Router();
 
-// @route   GET api/admin/stats
-// @desc    Get system statistics
+// System statistics
 router.get('/stats', authMiddleware, adminMiddleware, adminController.getStats);
 
-// @route   PUT api/admin/users/:userId
-// @desc    Manage user account
+// User management
+router.get('/users', authMiddleware, adminMiddleware, adminController.listUsers);
 router.put('/users/:userId', authMiddleware, adminMiddleware, adminController.manageUser);
 
 module.exports = router;
