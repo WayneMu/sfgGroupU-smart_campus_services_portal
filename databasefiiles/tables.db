@@ -1,0 +1,79 @@
+-- Create the database
+CREATE DATABASE IF NOT EXISTS smart_campus;
+USE smart_campus;
+
+-- Create the Users table
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role ENUM('student', 'lecturer', 'admin') DEFAULT 'student',
+  department VARCHAR(100),
+  status ENUM('active', 'inactive') DEFAULT 'active',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Create the Bookings table
+CREATE TABLE IF NOT EXISTS bookings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  room VARCHAR(50) NOT NULL,
+  purpose VARCHAR(255) NOT NULL,
+  start_time DATETIME NOT NULL,
+  end_time DATETIME NOT NULL,
+  status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create the Maintenance Tickets table
+CREATE TABLE IF NOT EXISTS maintenance_tickets (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  issue_type VARCHAR(50) NOT NULL,
+  description TEXT NOT NULL,
+  urgency ENUM('low', 'medium', 'high') DEFAULT 'medium',
+  status ENUM('open', 'in_progress', 'resolved') DEFAULT 'open',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create the Timetable table
+CREATE TABLE IF NOT EXISTS timetable (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  course_code VARCHAR(20) NOT NULL,
+  course_name VARCHAR(100) NOT NULL,
+  lecturer_id INT NOT NULL,
+  student_id INT NULL,
+  day ENUM('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday') NOT NULL,
+  start_time TIME NOT NULL,
+  end_time TIME NOT NULL,
+  room VARCHAR(50) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (lecturer_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Create the Notifications table
+CREATE TABLE IF NOT EXISTS notifications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  message TEXT NOT NULL,
+  urgency ENUM('low', 'medium', 'high') DEFAULT 'medium',
+  is_read BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create indexes for faster searches
+CREATE INDEX idx_user_id ON bookings(user_id);
+CREATE INDEX idx_maintenance_user_id ON maintenance_tickets(user_id);
+CREATE INDEX idx_timetable_lecturer ON timetable(lecturer_id);
+CREATE INDEX idx_timetable_student ON timetable(student_id);
+CREATE INDEX idx_notification_user_id ON notifications(user_id);
