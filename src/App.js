@@ -9,7 +9,7 @@ import Layout from './components/Layout';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import Dashboard from './pages/Dashboard';
-import Bookings from './pages/Bookings/Bookings';
+import { Bookings } from './pages/Bookings/Bookings';
 import CreateBooking from './pages/Bookings/CreateBooking';
 import Timetable from './pages/Timetable/Timetable';
 import Maintenance from './pages/Maintenance/Maintenance';
